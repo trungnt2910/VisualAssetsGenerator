@@ -147,6 +147,10 @@
     <Content Include="Ghostscript\gswin32c.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Preview.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
