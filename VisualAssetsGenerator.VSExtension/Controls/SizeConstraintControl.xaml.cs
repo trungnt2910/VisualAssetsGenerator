@@ -25,6 +25,8 @@ namespace VisualAssetGenerator.Controls
 
         public SizeConstraintControl()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             InitializeComponent();
             ViewModel.CollectionChanged += CollectionChanged;
             lbContentFraction.PreviewMouseWheel += OnPreviewMouseWheel;

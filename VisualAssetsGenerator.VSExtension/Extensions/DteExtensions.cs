@@ -9,10 +9,12 @@ namespace VisualAssetGenerator.Extensions
     {
         public static string GetSolutionPath()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             try
             {
-                var solution = ((DTE)ServiceProvider.GlobalProvider.GetService(typeof(DTE))).Solution;
-                if (!string.IsNullOrEmpty(solution.FullName))
+                var solution = (ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE)?.Solution;
+                if (!string.IsNullOrEmpty(solution?.FullName))
                 {
                     return Path.GetDirectoryName(solution.FullName);
                 }

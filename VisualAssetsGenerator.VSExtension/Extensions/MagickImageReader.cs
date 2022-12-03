@@ -67,7 +67,7 @@ namespace VisualAssetGenerator.Extensions
             using (var mi = GetMagickImage(path, sizeConstraint))
             {
                 var stream = new MemoryStream();
-                mi.Write(stream);
+                await mi.WriteAsync(stream);
                 await stream.FlushAsync();
                 stream.Position = 0;
 

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using EnvDTE;
+using Microsoft.VisualStudio.Shell;
 
 namespace VisualAssetGenerator.Extensions
 {
@@ -23,6 +24,8 @@ namespace VisualAssetGenerator.Extensions
         [Conditional("DEBUG")]
         public static void IdentifyInternalObjectTypes(UIHierarchyItem item)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (item == null)
             {
                 Debug.WriteLine("No item provided.");
@@ -56,6 +59,8 @@ namespace VisualAssetGenerator.Extensions
         [Conditional("DEBUG")]
         public static void IdentifyInternalObjectTypes(UIHierarchyItem item, Assembly assemblyToCheck)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             // Get the types that are publically available
             var exportedTypes = assemblyToCheck.GetExportedTypes();
 

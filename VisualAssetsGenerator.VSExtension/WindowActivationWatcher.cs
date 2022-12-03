@@ -20,6 +20,7 @@ using Microsoft.VisualStudio.DesignTools.ImageSet;
 using Microsoft.VisualStudio.DesignTools.ImageSet.View;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 using VisualAssetGenerator.Extensions;
 using VisualAssetGenerator.Model;
 using Image = System.Drawing.Image;
@@ -39,7 +40,7 @@ namespace VisualAssetGenerator
 
         internal WindowActivationWatcher(IVsMonitorSelection monitorSelection)
         {
-            //ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
@@ -68,6 +69,8 @@ namespace VisualAssetGenerator
 
         public void Dispose()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (_monSelCookie != 0U && _monitorSelection != null)
             {
                 _monitorSelection.UnadviseSelectionEvents(_monSelCookie);
@@ -80,7 +83,8 @@ namespace VisualAssetGenerator
 
         public int OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
         {
-            //ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var elementId = (VSConstants.VSSELELEMID) elementid;
             if (elementId != VSConstants.VSSELELEMID.SEID_WindowFrame || varValueNew == null) return VSConstants.S_OK;
 
@@ -129,10 +133,11 @@ namespace VisualAssetGenerator
 
         private static void RegisterVectorReader()
         {
-            //ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
 
-            var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(DTE));
+            var dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE;
 
+            if (dte == null) return;
             if (dte.ActiveDocument == null) return;
 
             var uiObject = Exposed.From(((dynamic)dte.ActiveDocument).ActiveWindow.Object).Content;
@@ -291,7 +296,7 @@ namespace VisualAssetGenerator
                     && formatsToAdd.Any(x => x.Equals(Path.GetExtension(exposedModel.SourceText), StringComparison.InvariantCultureIgnoreCase))
                     && exposedModel.SourceImage == null)
                 {
-                    ((UserControl)sender).Dispatcher.InvokeAsync(() => exposedModel.UpdateImagePreviewAsync());
+                    _ = ThreadHelper.JoinableTaskFactory.RunAsync(() => exposedModel.UpdateImagePreviewAsync());
                 }
             }
         }
